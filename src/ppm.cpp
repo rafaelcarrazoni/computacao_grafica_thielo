@@ -1,4 +1,7 @@
-#include <bits/stdc++.h>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
 
 using namespace std;
 
@@ -214,6 +217,38 @@ class Filtro
             return original;
         }
 
+};
+
+class bresenham 
+{
+    public:
+        void desenhar(Imagem imagem, int x0, int y0, int x, int y)
+        {
+            int delta_y = y - y0;
+            int delta_x = x - x0;
+            // mx + b = y
+            int m = delta_y/delta_x;
+
+            int p0 = 2*delta_y - delta_x;
+
+            int y_atual = y0;
+            for(int x_atual = x0; x_atual < x; x_atual++)
+            {
+                imagem.set_pixel(x_atual, y_atual, {255, 255, 255});
+                int pi = (2*delta_y * x_atual - 2*delta_x*y_atual) + (2*delta_y - delta_x);
+
+                if(pi < 0)
+                {
+                    pi = pi + 2*delta_y;
+                }
+                else 
+                {
+                    pi = pi + 2*delta_y - 2*delta_x;
+                }
+
+            }
+
+        }
 };
 
 void atividade_carimbar_labirinto()
