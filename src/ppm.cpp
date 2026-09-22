@@ -121,6 +121,12 @@ class Imagem
         }
         vector<int> get_pixel(int x, int y)
         {
+
+            if(x > this->largura || x < 0 || y > this->altura || y < 0)
+            {
+                return {}; // retorna vazio quando o pixel não existe
+            }
+
             vector<int> pixel;
             pixel.push_back(vermelho[x][y]);
             pixel.push_back(verde[x][y]);
@@ -278,6 +284,37 @@ class Bresenham
 
 
         }
+};
+
+class PaintBucket
+{
+    public:
+    void floodfill(Imagem imagem, int x, int y, const vector<int>& cor_escolhida = {0, 0, 0})
+    {
+        vector<int> original_pixel = imagem.get_pixel(x, y);
+        floodfill(imagem, x, y, original_pixel, cor_escolhida);
+    }
+    private: 
+    void floodfill(Imagem imagem, int x, int y, const vector<int>& original_pixel, const vector<int>& cor_escolhida)
+    {
+
+        if(!imagem.get_pixel(x,y).size())
+        {
+                return;
+        }
+
+        if(imagem.vermelho[x][y] != original_pixel[0] || imagem.verde[x][y] != original_pixel[1] || imagem.azul[x][y] != original_pixel[2])
+        {
+            return;
+        }
+        imagem.set_pixel(x, y, cor_escolhida);
+
+        floodfill(imagem, x + 1, y, original_pixel, cor_escolhida);
+        floodfill(imagem, x, y + 1, original_pixel, cor_escolhida);
+        floodfill(imagem, x - 1, y, original_pixel, cor_escolhida);
+        floodfill(imagem, x, y - 1, original_pixel, cor_escolhida);
+
+    }
 };
 
 void atividade_carimbar_labirinto()
