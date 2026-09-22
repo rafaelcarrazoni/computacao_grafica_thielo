@@ -351,6 +351,40 @@ class PaintBucket
     }
 };
 
+class CarimboMaligno
+{
+    public:
+        void carimbar_malignamente(Imagem* imagem, Imagem* carimbo, int caracter, const vector<int>& rgb)
+        {
+            int meio_carimbo = carimbo->largura/2;
+            int contador = 0;
+            int coluna = 0;
+            int coluna_origem = 0;
+
+            while(contador != caracter)
+            {
+                int flag = 0;
+                for(coluna = 0; coluna < carimbo->largura; coluna++)
+                {
+                    if(eh_preto(imagem, meio_carimbo, coluna))
+                    {
+                        flag++;
+                    }
+                }
+            }
+        }
+    private:
+        bool eh_preto(Imagem* imagem, int linha, int coluna)
+        {
+            if(imagem->vermelho[linha][coluna] == 0 &&
+            imagem->verde[linha][coluna] == 0 &&
+            imagem->azul[linha][coluna] == 0)
+            {
+                return true;
+            } return false;
+        }
+};
+
 void atividade_carimbar_labirinto()
 {
     Imagem arbusto = Imagem("Atividade_1_09/arbusto.ppm");
