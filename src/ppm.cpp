@@ -157,6 +157,34 @@ class Imagem
                 }
             }
         }
+
+        void carimbar(Imagem* carimbo, int linha_inicial, int coluna_inicial, int coluna_final, bool ignorar_transparente = true, const vector<int>& transparente = {0, 0, 0})
+        {
+            cout << "chegamos no carimbo";
+            for(int linha = 0; linha < carimbo->altura && (linha_inicial + linha) < this->altura; linha++)
+            {
+                for(int coluna = 0; coluna < carimbo->largura - coluna_final && (coluna_inicial + coluna) < this->largura; coluna++)
+                {
+                    if(ignorar_transparente)
+                    {
+                        if(carimbo->vermelho[linha][coluna] == transparente[0] && carimbo->verde[linha][coluna] == transparente[1] && carimbo->azul[linha][coluna] == transparente[2])
+                        {
+                            continue;
+                        }
+                    }
+
+                    int linha_destino = linha_inicial + linha;
+                    int coluna_destino = coluna_inicial + coluna;
+
+                    this->vermelho[linha_destino][coluna_destino] = carimbo->vermelho[linha][coluna];
+                    this->verde[linha_destino][coluna_destino]    = carimbo->verde[linha][coluna];
+                    this->azul[linha_destino][coluna_destino]     = carimbo->azul[linha][coluna];
+                }
+            }
+        }
+
+        
+
         void carimbar_mapa(string mapa_string, Imagem arbusto, Imagem chao)
         {
             ifstream mapa(mapa_string);
@@ -354,27 +382,49 @@ class PaintBucket
 class CarimboMaligno
 {
     public:
-        void carimbar_malignamente(Imagem* imagem, Imagem* carimbo, int caracter, const vector<int>& rgb)
+        static void carimbar_malignamente(Imagem* imagem, Imagem* carimbo, int caracter, const vector<int>& rgb)
         {
-            int meio_carimbo = carimbo->largura/2;
+            int meio_carimbo = carimbo->altura/2;
             int contador = 0;
             int coluna = 0;
             int coluna_origem = 0;
-
+            
             while(contador != caracter)
             {
                 int flag = 0;
                 for(coluna = 0; coluna < carimbo->largura; coluna++)
                 {
-                    if(eh_preto(imagem, meio_carimbo, coluna))
+                    if(flag == 0 && eh_preto(carimbo, meio_carimbo, coluna))
                     {
+                        //cout << "aventura";
+                        flag++;
+                        coluna_origem = coluna;
+                    }
+                    else if (flag == 1 && eh_branco(carimbo, meio_carimbo, coluna))
+                    {
+                        for(int corte_vertical = meio_carimbo; corte_vertical < carimbo->altura; corte_vertical++)
+                        {
+                            if(eh_preto(carimbo, corte_vertical, coluna))
+                            {
+                                flag--;
+                                break;
+                            }
+                        }
                         flag++;
                     }
+                    else if(flag == 2) 
+                    {
+                        contador++;
+                        break;
+                    }
+                    
                 }
             }
+            imagem->carimbar(carimbo, 0, coluna_origem, coluna);
+            imagem->printar("vida.ppm");
         }
     private:
-        bool eh_preto(Imagem* imagem, int linha, int coluna)
+        static bool eh_preto(Imagem* imagem, int linha, int coluna)
         {
             if(imagem->vermelho[linha][coluna] == 0 &&
             imagem->verde[linha][coluna] == 0 &&
@@ -383,6 +433,17 @@ class CarimboMaligno
                 return true;
             } return false;
         }
+        static bool eh_branco(Imagem* imagem, int linha, int coluna)
+        {
+            if(imagem->vermelho[linha][coluna] == 255 &&
+                imagem->verde[linha][coluna] == 255 &&
+                imagem->azul[linha][coluna] == 255)
+            {
+                return true;
+            } 
+            return false;
+        }
+        
 };
 
 void atividade_carimbar_labirinto()
@@ -410,8 +471,16 @@ void atividade_floodfill()
     PaintBucket::floodfill(carinhaReborn, 0, 0);
 }
 
+void carimbo_malignar()
+{
+    Imagem carimboEvil = Imagem("imagens/impactfont.ppm");
+    Imagem wilson = Imagem("imagens/mata.ppm");
+
+    CarimboMaligno::carimbar_malignamente(&wilson, &carimboEvil, 2, {0, 0, 0});
+}
+
 int main()
 {
-    atividade_floodfill();
+    carimbo_malignar();
     return 0;
 }
