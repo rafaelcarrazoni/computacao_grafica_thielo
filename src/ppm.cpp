@@ -446,6 +446,13 @@ class CarimboMaligno
         
 };
 
+class SVG
+{
+    public:
+    
+
+};
+
 void atividade_carimbar_labirinto()
 {
     Imagem arbusto = Imagem("Atividade_1_09/arbusto.ppm");
