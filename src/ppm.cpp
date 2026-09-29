@@ -3,6 +3,7 @@
 #include <set>
 #include <stack>
 #include <string>
+#include <cstdlib>
 #include <vector>
 
 using namespace std;
@@ -252,58 +253,58 @@ class Filtro
 
 };
 
-class Bresenham 
+class Bresenham
 {
-    public:
-        static void desenhar(Imagem imagem, int x0, int y0, int x1, int y1)
+public:
+    static void desenhar(Imagem& imagem, int x0, int y0, int x1, int y1)
+    {
+        int delta_x = abs(x1 - x0);
+        int delta_y = abs(y1 - y0);
+
+        int passo_x = x1 > x0 ? 1 : -1;
+        int passo_y = y1 > y0 ? 1 : -1;
+
+        if (delta_x >= delta_y)
         {
-            int delta_y = abs(y1 - y0);
-            int delta_x = abs(x1 - x0);
+            int y_atual = y0;
+            int pi = 2 * delta_y - delta_x;  // inicializado uma única vez
 
-            int passo_x = x1 > x0 ? 1 : -1;
-            int passo_y = y1 > y0 ? 1 : -1;
-
-            if(delta_x >= delta_y){
-                int y_atual = y0;
-                for(int x_atual = x0; x_atual < x1; x_atual += passo_x)
-                {
-                    imagem.set_pixel(y_atual, x_atual, {255, 255, 255});
-                    int pi = (2 * delta_y * x_atual - 2 * delta_x * y_atual) + (2 * delta_y - delta_x);
-
-                    if(pi < 0)
-                    {
-                        pi = pi + 2 * delta_y;
-                    }
-                    else 
-                    {
-                        pi = pi + 2 * delta_y - 2 * delta_x;
-                        y_atual += passo_y;
-                    }
-
-                }
-                return;
-            }
-
-            int x_atual = x0;
-            for(int y_atual = y0; y_atual < y1; y_atual += passo_y)
+            // != x1 + passo_x inclui o ponto final e funciona nos dois sentidos
+            for (int x_atual = x0; x_atual != x1 + passo_x; x_atual += passo_x)
             {
                 imagem.set_pixel(y_atual, x_atual, {255, 255, 255});
-                int pi = (2 * delta_x * y_atual - 2 * delta_y * x_atual) + (2 * delta_x - delta_y);
 
-                if(pi < 0)
+                if (pi < 0)
                 {
-                    pi = pi + 2 * delta_x;
+                    pi += 2 * delta_y;
                 }
-                else 
+                else
                 {
-                    pi = pi + 2 * delta_x - 2 * delta_y;
-                    x_atual += passo_x;
+                    pi += 2 * delta_y - 2 * delta_x;
+                    y_atual += passo_y;
                 }
-
             }
-
-
+            return;
         }
+
+        int x_atual = x0;
+        int pi = 2 * delta_x - delta_y;  // inicializado uma única vez
+
+        for (int y_atual = y0; y_atual != y1 + passo_y; y_atual += passo_y)
+        {
+            imagem.set_pixel(y_atual, x_atual, {255, 255, 255});
+
+            if (pi < 0)
+            {
+                pi += 2 * delta_x;
+            }
+            else
+            {
+                pi += 2 * delta_x - 2 * delta_y;
+                x_atual += passo_x;
+            }
+        }
+    }
 };
 
 class PaintBucket
