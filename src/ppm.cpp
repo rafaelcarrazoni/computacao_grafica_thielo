@@ -256,7 +256,7 @@ class Filtro
 class Bresenham
 {
 public:
-    static void desenhar(Imagem& imagem, int x0, int y0, int x1, int y1)
+    static void desenhar(Imagem* imagem, int x0, int y0, int x1, int y1)
     {
         int delta_x = abs(x1 - x0);
         int delta_y = abs(y1 - y0);
@@ -267,12 +267,11 @@ public:
         if (delta_x >= delta_y)
         {
             int y_atual = y0;
-            int pi = 2 * delta_y - delta_x;  // inicializado uma única vez
+            int pi = 2 * delta_y - delta_x;
 
-            // != x1 + passo_x inclui o ponto final e funciona nos dois sentidos
             for (int x_atual = x0; x_atual != x1 + passo_x; x_atual += passo_x)
             {
-                imagem.set_pixel(y_atual, x_atual, {255, 255, 255});
+                imagem->set_pixel(y_atual, x_atual, {255, 255, 255});
 
                 if (pi < 0)
                 {
@@ -288,11 +287,11 @@ public:
         }
 
         int x_atual = x0;
-        int pi = 2 * delta_x - delta_y;  // inicializado uma única vez
+        int pi = 2 * delta_x - delta_y;
 
         for (int y_atual = y0; y_atual != y1 + passo_y; y_atual += passo_y)
         {
-            imagem.set_pixel(y_atual, x_atual, {255, 255, 255});
+            imagem->set_pixel(y_atual, x_atual, {255, 255, 255});
 
             if (pi < 0)
             {
@@ -454,6 +453,36 @@ class SVG
 
 };
 
+class Fruton
+{
+    public:
+
+        static void projetarCubo()
+        {
+            vector<vector<double>> matriz_pontos = {{-1, -1, -1}, {-1, -1, 1}, {-1, 1, 1}, {1, 1, 1}, {1, 1, -1}, {1, -1, 1}, {1, -1, -1}, {-1, 1, -1}};
+
+            Imagem imagem = Imagem(100, 50);
+            int escala = 300;
+
+            for(int i = 0; i < int(matriz_pontos.size()) - 1; i += 1)
+            {
+                for(int j = 0; j < int(matriz_pontos.size()) - 1; j+= 1)
+                {
+                int x_tela = 60 + escala * (matriz_pontos[i][0]/(matriz_pontos[i][2] + 10));
+                int y_tela = 40 + escala * (matriz_pontos[i][1]/(matriz_pontos[i][2] + 10));
+            
+                int x_tela2 = 60 + escala * (matriz_pontos[j+1][0]/(matriz_pontos[j+1][2] + 10));
+                int y_tela2 = 40 + escala * (matriz_pontos[j+1][1]/(matriz_pontos[j+1][2] + 10));
+
+                Bresenham::desenhar(&imagem, x_tela, y_tela, x_tela2, y_tela2);
+                }
+            }
+
+            imagem.printar("dream.ppm");
+        }
+
+};
+
 void atividade_carimbar_labirinto()
 {
     Imagem arbusto = Imagem("Atividade_1_09/arbusto.ppm");
@@ -487,8 +516,13 @@ void carimbo_malignar()
     CarimboMaligno::carimbar_malignamente(&wilson, &carimboEvil, 2, {0, 0, 0});
 }
 
+void atividade_cubo()
+{
+    Fruton::projetarCubo();
+}
+
 int main()
 {
-    carimbo_malignar();
+    atividade_cubo();
     return 0;
 }
