@@ -21,10 +21,17 @@ class Imagem
         vector<vector<int>> verde;
         vector<vector<int>> azul;
 
-        Imagem(int altura, int largura)
+        Imagem(int altura, int largura, bool multiplicar_16 = false)
         {
-            this->altura = altura * 16;
-            this->largura = largura * 16;
+            if(multiplicar_16)
+            {
+                this->altura = altura * 16;
+                this->largura = largura * 16;
+            } else 
+            {
+                this->altura = altura;
+                this->largura = largura;
+            }
             this->tipo_arquivo = "P3";
             this->max_color = 255;
 
@@ -456,29 +463,29 @@ class SVG
 class Fruton
 {
     public:
+        static int escala;
+        static int z0;
+        static int offset;
 
         static void projetarCubo()
         {
-            vector<vector<double>> matriz_pontos = {{-1, -1, -1}, {-1, -1, 1}, {-1, 1, 1}, {1, 1, 1}, {1, 1, -1}, {1, -1, 1}, {1, -1, -1}, {-1, 1, -1}};
+            vector<vector<double>> matriz_pontos = {{-1, -1, -1}, {-1, -1, 1}, {-1, 1, 1}, {1, 1, 1}, {1, -1, 1}, {1, -1, -1}, {1, 1, -1}, {-1, 1, -1}};
 
-            Imagem imagem = Imagem(100, 50);
-            int escala = 300;
+            Imagem imagem = Imagem(800, 600);
 
-            for(int i = 0; i < int(matriz_pontos.size()) - 1; i += 1)
-            {
-                for(int j = 0; j < int(matriz_pontos.size()) - 1; j+= 1)
+            for(int i = 0; i < int(matriz_pontos.size()) - 1; i++){
+                int x_tela = offset + escala * (matriz_pontos[i][0]/(matriz_pontos[i][2] + z0));
+                int y_tela = offset + escala * (matriz_pontos[i][1]/(matriz_pontos[i][2] + z0));
+                
+                vector<vector<double>> mm = {{-1, 1, 1},{1, -1, 1},{1, 1, -1}};
+                for(int j = 0; j < 3; j++)
                 {
-                int x_tela = 60 + escala * (matriz_pontos[i][0]/(matriz_pontos[i][2] + 10));
-                int y_tela = 40 + escala * (matriz_pontos[i][1]/(matriz_pontos[i][2] + 10));
-            
-                int x_tela2 = 60 + escala * (matriz_pontos[j+1][0]/(matriz_pontos[j+1][2] + 10));
-                int y_tela2 = 40 + escala * (matriz_pontos[j+1][1]/(matriz_pontos[j+1][2] + 10));
-
-                Bresenham::desenhar(&imagem, x_tela, y_tela, x_tela2, y_tela2);
+                    int x_tela2 = offset + escala * (matriz_pontos[i][0]*mm[j][0]/(matriz_pontos[i][2] * mm[j][2] + z0));
+                    int y_tela2 = offset + escala * (matriz_pontos[i][1]*mm[j][1]/(matriz_pontos[i][2] * mm[j][2] + z0));
+                    Bresenham::desenhar(&imagem, x_tela, y_tela, x_tela2, y_tela2);
                 }
             }
-
-            imagem.printar("dream.ppm");
+            imagem.printar("imagens/cubo.ppm");
         }
 
 };
@@ -516,8 +523,15 @@ void carimbo_malignar()
     CarimboMaligno::carimbar_malignamente(&wilson, &carimboEvil, 2, {0, 0, 0});
 }
 
+int Fruton::escala;
+int Fruton::z0;
+int Fruton::offset;
 void atividade_cubo()
 {
+    Fruton::escala = 450;
+    Fruton::z0 = 5;
+    Fruton::offset = 160;
+
     Fruton::projetarCubo();
 }
 
