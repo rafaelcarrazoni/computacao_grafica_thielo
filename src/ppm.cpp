@@ -5,6 +5,7 @@
 #include <string>
 #include <cstdlib>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
@@ -466,26 +467,38 @@ class Fruton
         static int escala;
         static int z0;
         static int offset;
+        static vector<vector<double>> matriz_pontos;
+        static vector<vector<int>> adj;
 
         static void projetarCubo()
         {
-            vector<vector<double>> matriz_pontos = {{-1, -1, -1}, {-1, -1, 1}, {-1, 1, 1}, {1, 1, 1}, {1, -1, 1}, {1, -1, -1}, {1, 1, -1}, {-1, 1, -1}};
-
             Imagem imagem = Imagem(800, 600);
 
             for(int i = 0; i < int(matriz_pontos.size()) - 1; i++){
                 int x_tela = offset + escala * (matriz_pontos[i][0]/(matriz_pontos[i][2] + z0));
                 int y_tela = offset + escala * (matriz_pontos[i][1]/(matriz_pontos[i][2] + z0));
                 
-                vector<vector<double>> mm = {{-1, 1, 1},{1, -1, 1},{1, 1, -1}};
                 for(int j = 0; j < 3; j++)
                 {
-                    int x_tela2 = offset + escala * (matriz_pontos[i][0]*mm[j][0]/(matriz_pontos[i][2] * mm[j][2] + z0));
-                    int y_tela2 = offset + escala * (matriz_pontos[i][1]*mm[j][1]/(matriz_pontos[i][2] * mm[j][2] + z0));
+                    int x_tela2 = offset + escala * (matriz_pontos[adj[i][j]][0]/(matriz_pontos[adj[i][j]][2]+ z0));
+                    int y_tela2 = offset + escala * (matriz_pontos[adj[i][j]][1]/(matriz_pontos[adj[i][j]][2] + z0));
                     Bresenham::desenhar(&imagem, x_tela, y_tela, x_tela2, y_tela2);
                 }
             }
             imagem.printar("imagens/cubo.ppm");
+        }
+        static void rotacionar_x(int graus = 15)
+        {
+            double rad = graus * M_PI / 180.0;
+            for(int i = 0; i < int(matriz_pontos.size()); i++)
+            {
+                double y = matriz_pontos[i][1];
+                double z = matriz_pontos[i][2];
+
+                matriz_pontos[i][1] = y * cos(rad) - z * sin(rad);
+                matriz_pontos[i][2] = y * sin(rad) + z * cos(rad);
+            }
+            projetarCubo();
         }
 
 };
@@ -523,16 +536,28 @@ void carimbo_malignar()
     CarimboMaligno::carimbar_malignamente(&wilson, &carimboEvil, 2, {0, 0, 0});
 }
 
+// isso daqui ficou HORRÍVEL. Nunca mais usar atributos estáticos em c++.
 int Fruton::escala;
 int Fruton::z0;
 int Fruton::offset;
+vector<vector<double>> Fruton::matriz_pontos = {{-1, -1, -1}, {-1, -1, 1}, {-1, 1, 1}, {1, 1, 1}, {1, -1, 1}, {1, -1, -1}, {1, 1, -1}, {-1, 1, -1}};
+vector<vector<int>> Fruton::adj = {
+    {1, 7, 5},       
+    {0, 2, 4},       
+    {1, 3, 7},       
+    {2, 4, 6},       
+    {1, 3, 5},       
+    {0, 4, 6},       
+    {3, 5, 7},       
+    {0, 2, 6}        
+};
 void atividade_cubo()
 {
     Fruton::escala = 450;
     Fruton::z0 = 5;
     Fruton::offset = 160;
 
-    Fruton::projetarCubo();
+    Fruton::rotacionar_x(45);
 }
 
 int main()
