@@ -501,6 +501,34 @@ class Fruton
             projetarCubo();
         }
 
+        static void rotacionar_y(int graus = 15)
+        {
+            double rad = graus * M_PI / 180.0;
+            for(int i = 0; i < int(matriz_pontos.size()); i++)
+            {
+                double x = matriz_pontos[i][0];
+                double z = matriz_pontos[i][2];
+
+                matriz_pontos[i][0] = x * cos(rad) + z * sin(rad);
+                matriz_pontos[i][2] = -x * sin(rad) + z * cos(rad);
+            }
+            projetarCubo();
+        }
+
+        static void rotacionar_z(int graus = 15)
+        {
+            double rad = graus * M_PI / 180.0;
+            for(int i = 0; i < int(matriz_pontos.size()); i++)
+            {
+                double x = matriz_pontos[i][0];
+                double y = matriz_pontos[i][1];
+
+                matriz_pontos[i][0] = x * cos(rad) - y * sin(rad);
+                matriz_pontos[i][1] = x * sin(rad) + y * cos(rad);
+            }
+            projetarCubo();
+        }
+
 };
 
 void atividade_carimbar_labirinto()
@@ -555,9 +583,11 @@ void atividade_cubo()
 {
     Fruton::escala = 450;
     Fruton::z0 = 5;
-    Fruton::offset = 160;
+    Fruton::offset = 200;
 
-    Fruton::rotacionar_x(45);
+    Fruton::rotacionar_x(15);
+    Fruton::rotacionar_y(15);
+    Fruton::rotacionar_z(15);
 }
 
 int main()
