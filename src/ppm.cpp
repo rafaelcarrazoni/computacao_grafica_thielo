@@ -557,34 +557,75 @@ class OBJ{
         vector<face_obj> faces;
         vector<vertice_obj> vertices;
 
+        int escala = 450;
+        int z0 = 5;
+        int offset = 200;
+
         void ler_obj(string caminho)
         {
             ifstream arquivo(caminho);
 
             string palavra;
+            char tipo;
 
-            while(arquivo >> palavra){
-                if(palavra == "v"){
-                    int x;
-                    int y;
-                    int z;
+            while(arquivo >> tipo){
+                if(tipo == 'v'){
+                    cout <<  "definiu vertice";
+                    float x;
+                    float y;
+                    float z;
 
                     arquivo >> x;
                     arquivo >> y;
                     arquivo >> z;
                     vertices.push_back(vertice_obj(x, y, z));
                 }
-                if(palavra == "f"){
-                    int v1;
-                    int v2;
-                    int v3;
+                if(tipo == 'f'){
+                    cout << "definiu face";
+                    float v1;
+                    float v2;
+                    float v3;
 
                     arquivo >> v1;
                     arquivo >> v2;
                     arquivo >> v3;
-                    
+                    faces.push_back(face_obj(v1, v2, v3));
                 }
             }
+        }
+        void printar_obj(string caminho)
+        {
+
+            Imagem ppm = Imagem(1920, 1080);
+            for(auto& face: faces)
+            {
+                cout << "Entrou na face";
+                int x1 = vertices[face.v1 - 1].x;
+                int x2 = vertices[face.v2 - 1].x;
+                int x3 = vertices[face.v3 - 1].x;
+
+                int y1 = vertices[face.v1 - 1].y;
+                int y2 = vertices[face.v2 - 1].y;
+                int y3 = vertices[face.v3 - 1].y;
+
+                int z1 = vertices[face.v1 - 1].z;
+                int z2 = vertices[face.v2 - 1].z;
+                int z3 = vertices[face.v3 - 1].z;
+
+                x1 = offset + escala * (x1/(z1 + z0));
+                x2 = offset + escala * (x2/(z2 + z0));
+                x3 = offset + escala * (x3/(z3 + z0));
+
+                y1 = offset + escala * (y1/(z1 + z0));
+                y2 = offset + escala * (y2/(z2 + z0));
+                y3 = offset + escala * (y3/(z3 + z0));
+                
+                Bresenham::desenhar(&ppm, x1, y1, x2, y2);
+                Bresenham::desenhar(&ppm, x2, y2, x3, y3);
+                Bresenham::desenhar(&ppm, x3, y3, x1, y1);
+            }
+
+            ppm.printar(caminho);
         }
 };
 
@@ -647,8 +688,15 @@ void atividade_cubo()
     Fruton::rotacionar_z(15);
 }
 
+void testando_leitor_obj()
+{
+    OBJ obj = OBJ();
+    obj.ler_obj("imagens/elephant.obj");
+    obj.printar_obj("resultado.ppm");
+}
+
 int main()
 {
-    atividade_cubo();
+    testando_leitor_obj();
     return 0;
 }
