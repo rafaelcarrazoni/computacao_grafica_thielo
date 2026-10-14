@@ -526,11 +526,11 @@ class Fruton
 
 class vertice_obj {
     public:
-        int x;
-        int y;
-        int z;
+        float x;
+        float y;
+        float z;
 
-        vertice_obj(int x, int y, int z)
+        vertice_obj(float x, float y, float z)
         {
             this->x = x;
             this->y = y;
@@ -557,9 +557,9 @@ class OBJ{
         vector<face_obj> faces;
         vector<vertice_obj> vertices;
 
-        int escala = 450;
-        int z0 = 5;
-        int offset = 200;
+        float escala = 450;
+        float z0 = 30;
+        float offset = 600;
 
         void ler_obj(string caminho)
         {
@@ -599,18 +599,31 @@ class OBJ{
             Imagem ppm = Imagem(1920, 1080);
             for(auto& face: faces)
             {
+
                 cout << "Entrou na face";
-                int x1 = vertices[face.v1 - 1].x;
-                int x2 = vertices[face.v2 - 1].x;
-                int x3 = vertices[face.v3 - 1].x;
+                float x1 = vertices[face.v1 - 1].x;
+                float x2 = vertices[face.v2 - 1].x;
+                float x3 = vertices[face.v3 - 1].x;
 
-                int y1 = vertices[face.v1 - 1].y;
-                int y2 = vertices[face.v2 - 1].y;
-                int y3 = vertices[face.v3 - 1].y;
+                float y1 = vertices[face.v1 - 1].y;
+                float y2 = vertices[face.v2 - 1].y;
+                float y3 = vertices[face.v3 - 1].y;
 
-                int z1 = vertices[face.v1 - 1].z;
-                int z2 = vertices[face.v2 - 1].z;
-                int z3 = vertices[face.v3 - 1].z;
+                float z1 = vertices[face.v1 - 1].z;
+                float z2 = vertices[face.v2 - 1].z;
+                float z3 = vertices[face.v3 - 1].z;
+
+                float ax = x2 - x1;
+                float ay = y2 - y1;
+                float bx = x3 - x1;
+                float by = y3 - y1;
+                
+                float nz = ax * by - ay * bx;
+
+                if(nz > 0)
+                {
+                    continue;
+                }
 
                 x1 = offset + escala * (x1/(z1 + z0));
                 x2 = offset + escala * (x2/(z2 + z0));
@@ -620,9 +633,9 @@ class OBJ{
                 y2 = offset + escala * (y2/(z2 + z0));
                 y3 = offset + escala * (y3/(z3 + z0));
                 
-                Bresenham::desenhar(&ppm, x1, y1, x2, y2);
-                Bresenham::desenhar(&ppm, x2, y2, x3, y3);
-                Bresenham::desenhar(&ppm, x3, y3, x1, y1);
+                Bresenham::desenhar(&ppm, x1, 1080-y1, x2, 1080-y2);
+                Bresenham::desenhar(&ppm, x2, 1080-y2, x3, 1080-y3);
+                Bresenham::desenhar(&ppm, x3, 1080-y3, x1, 1080-y1);
             }
 
             ppm.printar(caminho);
