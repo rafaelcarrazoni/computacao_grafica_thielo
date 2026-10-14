@@ -454,13 +454,6 @@ class CarimboMaligno
         
 };
 
-class SVG
-{
-    public:
-    
-
-};
-
 class Fruton
 {
     public:
@@ -529,6 +522,70 @@ class Fruton
             projetarCubo();
         }
 
+};
+
+class vertice_obj {
+    public:
+        int x;
+        int y;
+        int z;
+
+        vertice_obj(int x, int y, int z)
+        {
+            this->x = x;
+            this->y = y;
+            this->z = z;
+        }
+};
+
+class face_obj {
+    public:
+        int v1;
+        int v2;
+        int v3;
+
+        face_obj(int v1, int v2, int v3)
+        {
+            this->v1 = v1;
+            this->v2 = v2;
+            this->v3 = v3;
+        }
+};
+
+class OBJ{
+    public: 
+        vector<face_obj> faces;
+        vector<vertice_obj> vertices;
+
+        void ler_obj(string caminho)
+        {
+            ifstream arquivo(caminho);
+
+            string palavra;
+
+            while(arquivo >> palavra){
+                if(palavra == "v"){
+                    int x;
+                    int y;
+                    int z;
+
+                    arquivo >> x;
+                    arquivo >> y;
+                    arquivo >> z;
+                    vertices.push_back(vertice_obj(x, y, z));
+                }
+                if(palavra == "f"){
+                    int v1;
+                    int v2;
+                    int v3;
+
+                    arquivo >> v1;
+                    arquivo >> v2;
+                    arquivo >> v3;
+                    
+                }
+            }
+        }
 };
 
 void atividade_carimbar_labirinto()
