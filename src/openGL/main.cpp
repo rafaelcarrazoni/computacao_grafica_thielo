@@ -3,8 +3,12 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
+#include <vector>
 
 using namespace std;
+
+GLfloat xf = 0;
+GLfloat yf = 0;
 
 class vertice_obj {
     public:
@@ -75,6 +79,8 @@ class OBJ{
         }
      
 };
+
+OBJ obj = OBJ();
 
 int window_width  = 800;  // "static int" evitaria que outros códigos do mesmo projeto vejam estas variáveis
 int window_height = 600;
@@ -220,12 +226,9 @@ void display(void)
  //   glTranslatef(2.0f, 0.0f, 0.0f); 
  //   glRotatef(angle, 0.0f, 1.0f, 0.0f);
 
-    OBJ obj = OBJ();
-    obj.ler_obj("imagens/elephant.obj");
-
     glPushMatrix();
-      glTranslatef(0.0f, 0.5f, 0.0f); 
-      glRotatef(angle, 0.0f, 1.0f, 0.0f);
+      glTranslatef(0.0f, 0.5f + yf, 0.0f); 
+      //glRotatef(angle, 0.0f, 1.0f, 0.0f);
 	  glColor3f(1.0f, 0.0f, 0.0f);
 	  //glutSolidSphere(0.7, 36, 36);
       desenhaObjeto(obj);
@@ -251,11 +254,24 @@ void keyboard(unsigned char key, int x, int y)
     if (key == 27 || key == 'q' || key == 'Q') { // ESC ou Q sai 
         exit(0);
     }
+    switch (key)
+    {
+    case 'w':
+        yf += 1;
+        break;
+    case 's':
+        yf -= 1;
+    
+    default:
+        break;  
+    }
 }
 
+void mouse(int left, int state, )
 
 int main(int argc, char** argv)
 {
+    obj.ler_obj("imagens/elephant.obj");
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(window_width, window_height);
