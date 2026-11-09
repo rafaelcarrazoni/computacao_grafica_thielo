@@ -10,6 +10,9 @@ using namespace std;
 GLfloat xf = 0;
 GLfloat yf = 0;
 
+GLfloat xm = 0;
+GLfloat ym = 0;
+
 class vertice_obj {
     public:
         float x;
@@ -228,7 +231,7 @@ void display(void)
 
     glPushMatrix();
       glTranslatef(0.0f, 0.5f + yf, 0.0f); 
-      //glRotatef(angle, 0.0f, 1.0f, 0.0f);
+      glRotatef(ym, 0.0f, 0.0f, 0.0f);
 	  glColor3f(1.0f, 0.0f, 0.0f);
 	  //glutSolidSphere(0.7, 36, 36);
       desenhaObjeto(obj);
@@ -267,7 +270,15 @@ void keyboard(unsigned char key, int x, int y)
     }
 }
 
-void mouse(int left, int state, )
+void mouse(int button, int state, int x, int y) 
+{
+
+    if(button == GLUT_LEFT_BUTTON)
+    {
+        ym += 1.0;
+    }
+    
+}
 
 int main(int argc, char** argv)
 {
@@ -283,6 +294,7 @@ int main(int argc, char** argv)
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
     glutIdleFunc(idleFunc);
+    glutMouseFunc(mouse);
 
     glutMainLoop();
     return 0;
