@@ -10,8 +10,13 @@ using namespace std;
 GLfloat xf = 0;
 GLfloat yf = 0;
 
-GLfloat xm = 0;
-GLfloat ym = 0;
+GLfloat rotation_x = 0;
+GLfloat rotation_y = 0;
+
+GLfloat last_x = 0;
+GLfloat last_y = 0;
+
+bool dragging = false;
 
 class vertice_obj {
     public:
@@ -230,8 +235,9 @@ void display(void)
  //   glRotatef(angle, 0.0f, 1.0f, 0.0f);
 
     glPushMatrix();
-      glTranslatef(0.0f, 0.5f + yf, 0.0f); 
-      glRotatef(ym, 0.0f, 0.0f, 0.0f);
+      glTranslatef(0.0f, 0.0f + yf, 0.0f + xf); 
+      glRotatef(rotation_x, 0.0f, 1.0f, 0.0f);
+      glRotatef(rotation_y, 1.0f, 0.0f, 0.0f);
 	  glColor3f(1.0f, 0.0f, 0.0f);
 	  //glutSolidSphere(0.7, 36, 36);
       desenhaObjeto(obj);
@@ -264,20 +270,40 @@ void keyboard(unsigned char key, int x, int y)
         break;
     case 's':
         yf -= 1;
-    
+        break;
+    case 'd':
+        xf -= 1;
+        break;
+    case 'a':
+        xf += 1;
+        break;
     default:
         break;  
     }
 }
 
-void mouse(int button, int state, int x, int y) 
+void mouse_click(int button, int state, int x, int y) 
 {
-
     if(button == GLUT_LEFT_BUTTON)
     {
-        ym += 1.0;
+        if(dragging == false)
+        {
+            last_x = x;
+            last_y = y;
+        }
+        dragging = (state == GLUT_DOWN);
     }
-    
+}
+
+void mouse_motion(int x, int y)
+{
+    if(dragging){
+    rotation_x += (x - last_x) / 10;
+    rotation_y += (y - last_y) / 10;
+
+    last_x = x;
+    last_y = y;
+    }
 }
 
 int main(int argc, char** argv)
@@ -294,7 +320,8 @@ int main(int argc, char** argv)
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
     glutIdleFunc(idleFunc);
-    glutMouseFunc(mouse);
+    glutMouseFunc(mouse_click);
+    glutMotionFunc(mouse_motion);
 
     glutMainLoop();
     return 0;
